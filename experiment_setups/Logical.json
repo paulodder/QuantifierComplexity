@@ -1,0 +1,20 @@
+{
+    "name": "Logical",
+    "operators": [
+        ">f",
+        ">",
+        ">=",
+        "=",
+        "/",
+        "subset",
+        "intersection",
+        "union",
+        "card",
+        "diff",
+        "+",
+        "-",
+        "and",
+        "or",
+        "not"
+    ]
+}

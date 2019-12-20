@@ -1,0 +1,22 @@
+{
+    "name": "Logical_index",
+    "operators": [
+        ">f",
+        ">",
+        ">=",
+        "=",
+        "/",
+        "subset",
+        "intersection",
+        "union",
+        "card",
+        "diff",
+        "+",
+        "-",
+        "and",
+        "or",
+        "not",
+        "index"
+
+    ]
+}
