@@ -56,11 +56,23 @@ class LanguageGenerator:
             sum(self.number_of_subsets ** i for i in range(max_model_size + 1))
             - 1
         )
-        self.out_dir = Path(self.dest_dir) / make_experiment_dir_name(
-            self.max_model_size, self.experiment_name
-        )
+        self._set_output_dirs()
         self._set_operators()
         self._set_size2range()
+        self.meaning_matrix = None
+
+    def _set_output_dirs(self):
+        """Set output directories"""
+        self.results_dir = Path(self.dest_dir) / make_experiment_dir_name(
+            self.max_model_size, self.experiment_name
+        )
+        self.figure_dir = self.results_dir / "figures"
+        os.mkdir(self.results_dir) if not os.path.exists(
+            self.results_dir
+        ) else None
+        os.mkdir(self.figure_dir) if not os.path.exists(
+            self.figure_dir
+        ) else None
 
     def _set_size2range(self):
         """Set size2range feature that maps the size of the model to a tuple
@@ -163,7 +175,6 @@ class LanguageGenerator:
                 #     #     (cur_size, 4 ** cur_size), dtype=np.uint8
                 #     # )
             else:
-                print("HERE")
                 set_repr.flags.writeable = False
                 arg_meaning.append(set_repr)
         return arg_meaning
@@ -271,7 +282,6 @@ class LanguageGenerator:
     def _ignore_or_add(self, expr):
         """Generates meaning tuple for expression, checks if we already have an
         expression with that meaning, and if so does not do anything with it.
-        If it is indeed a unique meaning, adds it to the
         output_type2expression2meaning mapping according to the output type of
         the expression
         """
@@ -328,7 +338,7 @@ class LanguageGenerator:
                                 arg_len_2
                             ][arg_type_2]:
                                 expr = (op_name, sub_expr_1, sub_expr_2)
-                                unique_meaning = self._ignore_or_add(expr,)
+                                unique_meaning = self._ignore_or_add(expr)
                                 if unique_meaning:
                                     type2expressions[output_type].append(expr)
             self.length2type2expressions[i] = type2expressions
@@ -353,9 +363,8 @@ class LanguageGenerator:
 
     def write_expressions(self):
         """Writes current expressions and itself to dill file"""
-        print(f"Interim saving of current state (to {self.out_dir}")
+        print(f"Interim saving of current state (to {self.results_dir}")
         experiment_name = os.path.splitext(os.path.basename(self.json_path))[0]
-        os.mkdir(self.out_dir) if not os.path.exists(self.out_dir) else None
         current_max_len = max(self.length2type2expressions.keys())
         current_expressions = list(
             it.chain.from_iterable(
@@ -387,3 +396,27 @@ class LanguageGenerator:
             if self.same_meaning(meaning, m):
                 return exp
         return False
+
+    def _compute_meaning_matrix(self):
+        """returns matrix where the ith row corresponds to the meaning of the
+        ith expression (of those it has computed so far)"""
+        self.sorted_exps = sorted(
+            list(self.output_type2expression2meaning[bool]),
+            key=str,
+            reverse=True,
+        )
+        out = np.zeros((len(self.sorted_exps), self.N_OF_MODELS))
+        for i, exp in enumerate(self.sorted_exps):
+            out[i, :] = self.output_type2expression2meaning[bool][exp]
+        self.meaning_matrix = out
+
+    def compute_and_set_meaning_matrix(self):
+        """Computes and sets meaning_matrix"""
+        if self.meaning_matrix is not None:
+            nof_own_expressions = len(
+                self.output_type2expression2meaning[bool]
+            )
+            if self.meaning_matrix.shape[0] == nof_own_expressions:
+                return
+            else:  # need to make new one
+                self._compute_meaning_matrix(self)
