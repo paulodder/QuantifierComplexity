@@ -27,7 +27,6 @@ import languagegenerator as lg
 importlib.reload(lg)
 from languagegenerator import LanguageGenerator
 
-sys.argv = [""]
 
 MAX_EXPRESSION_LENGTH = 5
 MAX_MODEL_SIZE = 9
