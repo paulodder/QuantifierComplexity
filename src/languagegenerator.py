@@ -373,13 +373,13 @@ class LanguageGenerator:
             )
         )
         with open(
-            self.out_dir
+            self.results_dir
             / ("expressions_up_to_length_%s.dill" % current_max_len),
             "wb",
         ) as f:
             dill.dump(current_expressions, f)
         with open(
-            self.out_dir
+            self.results_dir
             / ("language_generator_up_to_length_%s.dill" % current_max_len),
             "wb",
         ) as f:
