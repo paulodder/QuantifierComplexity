@@ -952,7 +952,6 @@ def quant_for_exps(
     output_format="dict",
 ):
     """Compute graded quantity score"""
-    # meaning_matrix = return_meaning_matrix(exps, lang_gen)
     for i, exp in enumerate(exps):
         outp_type = lang_gen.get_output_type(exp)
         meaning_matrix[i, :] = lang_gen.output_type2expression2meaning[
@@ -1107,7 +1106,7 @@ def divide_possibly_zero(array_a, array_b):
 #     )
 
 
-def new_monotonicity_for_exps(
+def monotonicity_for_exps(
     exps,
     lang_gen,
     meaning_matrix,
@@ -1115,8 +1114,6 @@ def new_monotonicity_for_exps(
     # , char_tuple2bool_idxs, output_format="dict"
 ):
     """Compute graded quantity score"""
-
-    # = return_meaning_matrix(exps, lang_gen)
 
     # for i, exp in enumerate(exps):
     #     outp_type = lang_gen.get_output_type(exp)
@@ -1537,6 +1534,68 @@ def quant_for_exps(
         return None
 
 
+def conservativity_for_exps_previous(
+    exps,
+    lang_gen,
+    meaning_matrix,
+    # char_tuple2freq,
+    # char_tuple2bool_idxs,
+    output_format="dict",
+):
+    """Compute graded quantity score"""
+    # meaning_matrix = return_meaning_matrix(exps, lang_gen)
+    char_tuple2idxs, char_tuple2freq = partition_model_space_modulo(
+        lang_gen, conservativity_signature, True
+    )
+    # for i, exp in enumerate(exps):
+    #     outp_type = lang_gen.get_output_type(exp)
+    #     meaning_matrix[i, :] = lang_gen.output_type2expression2meaning[
+    #         outp_type
+    #     ][exp]
+    H_Q_given_char_tuple = np.zeros(len(exps), dtype=np.float128)
+    nof_models = sum(
+        lang_gen.number_of_subsets ** i
+        for i in range(1, lang_gen.max_model_size + 1)
+    )
+    prob_of_truth = np.array(
+        (np.apply_along_axis(sum, 1, meaning_matrix) / nof_models),
+        dtype=np.float128,
+    )
+    H_Q = vectorized_h(prob_of_truth)
+    for char_tuple, prob in char_tuple2freq.items():
+        # relevant_bools = meaning_matrix[char_tuple2bool_idxs[char_tuple]]
+        # print(char_tuple)
+        relevant_sample_space = meaning_matrix[:, char_tuple2idxs[char_tuple]]
+        size_of_sample_space = relevant_sample_space.shape[1]
+        # print(size_of_sample_space)
+        freqs = (
+            np.apply_along_axis(sum, 1, relevant_sample_space)
+            / size_of_sample_space
+        )
+        H_Q_given_this_char_tuple = vectorized_h(freqs) * prob
+        # print(H_Q_given_this_char_tuple)
+        H_Q_given_char_tuple += H_Q_given_this_char_tuple
+        # (entropy_of_Q - H_Q_given_char_tuple)
+    exp2H_Q = dict((e, q) for e, q in zip(exps, H_Q))
+    exp2H_Q_given_char_tuple = dict(
+        (e, q) for e, q in zip(exps, H_Q_given_char_tuple)
+    )
+    if output_format == "dict":
+        return dict(
+            (exp, q)
+            for exp, q in zip(
+                exps,
+                [
+                    ((b - a) / b) if b != 0 else 1
+                    for a, b in zip(H_Q_given_char_tuple, H_Q)
+                ],
+            )
+        )
+    else:
+        pass  # do later
+        return None
+
+
 def conservativity_for_exps(
     exps,
     lang_gen,
@@ -1771,7 +1830,9 @@ def load_expressions_for(experiment_name, max_model_size):
     return out
 
 
-def load_lang_gen_for(experiment_name, max_model_size):
+def load_lang_gen_for(
+    experiment_name, max_model_size, max_expression_length=None
+):
     """Given name of experiment and max model size, loads language generator for
     highest possible number of expressions from results dir of that
     experiment
@@ -1782,10 +1843,32 @@ def load_lang_gen_for(experiment_name, max_model_size):
         / Path(RESULTS_DIR_RELATIVE)
         / make_experiment_dir_name(max_model_size, experiment_name)
     )
-    to_load = max(
-        [f for f in os.listdir(experiment_dir) if "lang" in f],
-        key=lambda x: re.findall("[0-9]+", x)[-1],
-    )
+    if max_expression_length is None:
+        to_load = max(
+            [f for f in os.listdir(experiment_dir) if "lang" in f],
+            key=lambda x: re.findall("[0-9]+", x)[-1],
+        )
+    else:
+        for f in os.listdir(experiment_dir):
+            if "lang" not in f:
+                continue
+            if re.findall("[0-9]+", f):
+                n = re.findall("[0-9]+", f)[-1]
+                if n == str(max_expression_length):
+                    to_load = f
+                    break
+        else:
+            print("Could not find file with given settings")
+        # print(os.listdir(experiment_dir))
+        # print(
+        #     [[-1] for f in os.listdir(experiment_dir)]
+        # )
+        # to_load = next(
+        #     f
+        #     for f in os.listdir(experiment_dir)
+        #     if "lang" in f
+        #     and re.findall("[0-9]+", f)[-1] == str(max_expression_length)
+        # )
     with open(Path(experiment_dir) / to_load, "rb") as f:
         out = dill.load(f)
     return out
