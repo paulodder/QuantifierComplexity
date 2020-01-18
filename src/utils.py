@@ -1,54 +1,54 @@
-from pathlib import Path
-import seaborn as sns
 import math
-from functools import partial
-import dill
-import numpy as np
+import sys
 import os
+import json
 import re
+import itertools as it
+from pathlib import Path
+from functools import partial
+from collections import namedtuple, defaultdict, Counter
+
+import dill
+import bitarray
+import seaborn as sns
+import numpy as np
+import dotenv
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
-
-# from multiprocess import Pool, TimeoutError, Process
-
 from pathos.multiprocessing import ProcessingPool as Pool
-import operators
-import json
-import operators
-from collections import namedtuple, defaultdict, Counter
-import itertools as it
-import bitarray
-import dotenv
-import os
+
 
 dotenv.load_dotenv(dotenv.find_dotenv())
-PROJECT_DIR = os.getenv("PROJECT_DIR")
+PROJECT_DIR = Path(os.getenv("PROJECT_DIR"))
 JSON_SETUP_DIR_RELATIVE = os.getenv("JSON_SETUP_DIR_RELATIVE")
 RESULTS_DIR_RELATIVE = os.getenv("RESULTS_DIR_RELATIVE")
-# JSON_SETUP_DIR_RELATIVE = "/home/paul/Dropbox/courses/quantifiers/SimInf_Quantifiers/ExperimentSetups/"
-
-
-# SetDefiner = namedtuple("SetDefiner", "name func")
-# SetDefiner.__repr__ = lambda self: self.name
-# SetDefiner.__str__ = lambda self: self.name
-
-
-def partition_on_length(exps):
-    desired_len = max(map(exp_len, exps))
-    return dict(
-        (i, [e for e in exps if exp_len(e) == i])
-        for i in range(1, desired_len + 1)
-    )
+sys.path.insert(0, str(PROJECT_DIR / "src"))  # add src dir to pyton path
+import operators
 
 
 def exp_len(exp):
+    """Given expresion in tuple format, returns expression length"""
     if type(exp) == str:
         return 1
     else:
         return sum(exp_len(x) for x in exp)
 
 
+def partition_on_length(exps):
+    """Given iterable with expressions, returns dict that maps each length to
+    list with expressions of that length """
+    exp2len = dict(zip(exps, list(map(exp_len, exps))))
+    len2exp = dict()
+    for exp, length in exp2len.items():
+        if length in len2exp:
+            len2exp[length].append(exp)
+        else:
+            len2exp[length] = [exp]
+    return len2exp
+
+
 def prettify_model(m):
+    """Prettifies model representation"""
     tups = list(zip(*m))
     out = []
     for a in tups:
@@ -75,112 +75,9 @@ def load_language_generator_for(max_len, max_size, experiment):
         return dill.load(f)
 
 
-# def load_expressions_for(max_len, max_size, experiment, who):
-#     if who == "paul":
-#         results_dir = Path(
-#             "/home/paul/Dropbox/courses/quantifiers/SimInf_Quantifiers/MY_RESULTS"
-#         )
-#     elif who == "wouter":
-#         results_dir = Path(
-#             "/home/paul/Dropbox/courses/quantifiers/SimInf_Quantifiers/WOUTER_RESULTS"
-#         )
-
-#     with open(
-#         Path(results_dir)
-#         / f"{experiment}_length={max_len}_size={max_size}/expressions.dill",
-#         "rb",
-#     ) as f:
-#         if who == "wouter":
-#             return list(map(expression2tuple, dill.load(f)))
-#         else:
-#             return list(dill.load(f))
-
-
-def convert_to_tree(exp):
-    if type(exp) is not tuple:
-        return Node(exp)
-    else:
-        return Node(exp[0], children=[convert_to_tree(arg) for arg in exp[1:]])
-
-
-def expression2tuple(expr_object):
-    out = ()
-    if len(expr_object.arg_expressions) == 0:
-        # print("parsing", expr_object, type(expr_object.name))
-        if type(expr_object.name) is np.float64:
-            out = str(round(expr_object.name, 2))
-        else:
-            out = str(expr_object.name)
-        return out
-    elif len(expr_object.arg_expressions) == 1:
-        return (
-            expr_object.name,
-            expression2tuple(expr_object.arg_expressions[0]),
-        )
-    else:
-        return (
-            expr_object.name,
-            expression2tuple(expr_object.arg_expressions[0]),
-            expression2tuple(expr_object.arg_expressions[1]),
-        )
-
-
-def unique_meanings(exps0, exps1, l):
-    meaning2exp0 = defaultdict(list)
-    meaning2exp1 = defaultdict(list)
-    for exp in exps0:
-        meaning2exp0[tuple(l.compute_meaning(exp))].append(exp)
-    for exp in exps1:
-        meaning2exp1[tuple(l.compute_meaning(exp))].append(exp)
-    print("Share meaning {:<50}{:<30}".format("My set", "Wouters set"))
-    for meaning in set(meaning2exp1).union(set(meaning2exp0)):
-        expr0, expr1 = meaning2exp0[meaning], meaning2exp1[meaning]
-        if expr0 == expr1:
-            continue
-        print(
-            "Share meaning {:<50}{:<30}".format(
-                *tuple(
-                    map(
-                        str,
-                        (
-                            # meaning,
-                            meaning2exp0[meaning],
-                            meaning2exp1[meaning],
-                        ),
-                    )
-                )
-            )
-        )
-
-
-perm_invariant_ops = ["union", "=f", "=", "+", "intersection", "and", "or"]
-
-
-def same_exp1(exp1, exp2):
-    if type(exp1) != type(exp2):
-        return False
-    if exp1 == exp2:
-        return True
-    if type(exp1) == tuple:
-        if len(exp1) != len(exp2):
-            return False
-        if len(exp1) == 2:
-            return exp1[0] == exp2[0] and same_exp1(exp1[1], exp2[1])
-        else:
-
-            return (
-                exp1[0] == exp2[0]
-                and (
-                    same_exp1(exp1[1], exp2[2]) and same_exp1(exp1[2], exp2[1])
-                )
-                or (
-                    same_exp1(exp1[1], exp2[1]) and same_exp1(exp1[2], exp2[2])
-                )
-            )
-
-
 def same_exp(exp1, exp2):
-    # print(exp1, exp2)
+    """Checks if 2 expressions are syntactically the same"""
+    perm_invariant_ops = ["union", "=f", "=", "+", "intersection", "and", "or"]
     if exp1 == exp2:
         return True
     if type(exp1) != type(exp1) or len(exp1) != len(exp2):
@@ -215,23 +112,6 @@ def make_experiment_dir_name(max_model_size, experiment_name=None):
         return f"Experiment={experiment_name}-max_model_size={max_model_size}"
     else:
         return f"max_model_size={max_model_size}"
-
-
-_generate_expressions_of_len = None
-
-
-def worker_init(func):
-    global _generate_expressions_of_len
-    _generate_expressions_of_len = func
-
-
-def worker(x):
-    return _generate_expressions_of_len(x)
-
-
-def ximap_unordered(func, iterable, processes=None):
-    with Pool(processes, initializer=worker_init, initargs=(func,)) as p:
-        return p.imap_unordered(worker, iterable)
 
 
 def return_if_unique(lang_generator, expr):

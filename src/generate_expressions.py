@@ -64,13 +64,6 @@ def parse_args():
         help="Name of json file to be used with relevant settings",
     )
     parser.add_argument(
-        "--number_of_subsets",
-        "-s",
-        type=int,
-        default=DEFAULT_NOF_SUBSETS,
-        help="Number of subsets to use include if 3: uses A, B, A AND B, if 4: also uses A MINUS B",
-    )
-    parser.add_argument(
         "--dest_dir",
         "-d",
         type=str,
@@ -91,10 +84,7 @@ if __name__ == "__main__":
     args = parse_args()
     print(args.max_expression_length, args.max_model_size)
     l = lg.LanguageGenerator(
-        args.max_model_size,
-        args.number_of_subsets,
-        args.dest_dir,
-        json_path=args.json_setup,
+        args.max_model_size, args.dest_dir, json_path=args.json_setup,
     )
     exps = l.generate_all_sentences(args.max_expression_length)
     experiment_name = os.path.splitext(os.path.basename(args.json_setup))[0]

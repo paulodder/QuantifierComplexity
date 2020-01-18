@@ -1,14 +1,16 @@
 import dotenv
+import sys
 import os
 import sys
 import json
-from pathlib import Path
-from collections import namedtuple
+
+import dill
+import bitarray
 import numpy as np
 import itertools as it
-import bitarray
+from pathlib import Path
+from collections import namedtuple
 from collections import defaultdict
-import dill
 from utils import make_experiment_dir_name
 
 dotenv.load_dotenv(dotenv.find_dotenv())
@@ -33,7 +35,6 @@ class LanguageGenerator:
     def __init__(
         self,
         max_model_size,
-        number_of_subsets,
         dest_dir=Path(PROJECT_DIR) / Path(RESULTS_DIR_RELATIVE),
         store_at_each_length=1,
         json_path="",
@@ -41,24 +42,20 @@ class LanguageGenerator:
         """Initializes LanguageGenerator object
         :param max_model_size: The size of models on which expressions will be
         evaluated
-        :param number_of_subsets: Either 3 or 4: if number_of_subsets=3 the set
-        predicates are A and B, if number_of_subsets=4 the set predicates are
-        A, B and M. This parameter restricts what the language can talk about.
         :param dest_dir: Directory in which to store results
         :param store_at_each_length: If 1, stores expressions and itself at
         every length
         :param json_path: Name of json file """
 
         self.max_model_size = max_model_size
-        self.number_of_subsets = number_of_subsets
         self.dest_dir = dest_dir
+        self.store_at_each_length = store_at_each_length
+        self.json_path = json_path
+        self._load_json(json_path)
         self.N_OF_MODELS = (
             sum(self.number_of_subsets ** i for i in range(max_model_size + 1))
             - 1
         )
-        self.store_at_each_length = store_at_each_length
-        self.json_path = json_path
-        self._load_json(json_path)
         self.out_dir = Path(self.dest_dir) / make_experiment_dir_name(
             self.max_model_size, self.experiment_name
         )
@@ -101,6 +98,7 @@ class LanguageGenerator:
             ) as f:
                 self.json_data = json.load(f)
                 self.experiment_name = self.json_data["name"]
+                self.number_of_subsets = self.json_data["number_of_subsets"]
         else:
             self.json_data = None
             self.experiment_name = None
@@ -171,6 +169,7 @@ class LanguageGenerator:
         return arg_meaning
 
     def get_output_type(self, arg):
+        """Get output type of expression, i.e. to what it would evaluate."""
         if type(arg) is tuple:
             return self.operators[arg[0]].output_type
         if type(arg) is float:
@@ -178,6 +177,7 @@ class LanguageGenerator:
         return self.atom2output_type[str(arg)]
 
     def compute_meaning(self, expr):
+        """Compute meaning representation for given expression"""
         if type(expr) is not tuple:
             return self.output_type2expression2meaning[
                 self.atom2output_type[expr]
@@ -198,8 +198,6 @@ class LanguageGenerator:
 
     def same_meaning(self, el0, el1):
         """Determines if 2 elements have same meaning"""
-        # if self.get_output_type(el0) != self.get_output_type(el1):
-        #     return False
         if type(el0) != type(el1):
             out = False
         elif type(el0) is list:

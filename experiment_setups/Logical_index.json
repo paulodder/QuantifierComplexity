@@ -1,5 +1,6 @@
 {
     "name": "Logical_index",
+    "number_of_subsets": 3,
     "operators": [
         ">f",
         ">",
