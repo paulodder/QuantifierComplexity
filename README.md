@@ -16,4 +16,4 @@ In order to **generate** expressions for a given set of settings, use
     python src/generate_expressions.py  --max_model_size 8 --max_expression_length 6 --json_setup Logical_index.json
 
 The script will store the results under `PROJECT_DIR/results/` by default (but
-this behaviour can be changed by setting `RESULTS_DIR_RELATIVE` in `.env`.
+this behaviour can be changed by setting `RESULTS_DIR_RELATIVE` in `.env`).
