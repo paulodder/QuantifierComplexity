@@ -231,11 +231,11 @@ class LanguageGenerator:
         )
         output_type2atoms = {
             int: [],
-            float: [],
+            # float: [],
             bool: [],
             operators.SetPlaceholder: [],
         }
-        for i in range(0, self.max_model_size + 1, 2):
+        for i in range(0, self.max_model_size + 1, 1):
             output_type2atoms[int].append(
                 Atom(str(i), lambda model, i=i: 0 + i, True)
             )
@@ -251,10 +251,10 @@ class LanguageGenerator:
                     False,
                 )
             )
-        for q in np.arange(0, 1, 0.1):
-            output_type2atoms[float].append(
-                Atom(str(round(q, 2)), lambda model, q=q: q, True)
-            )
+        # for q in np.arange(0, 1, 0.1):
+        #     output_type2atoms[float].append(
+        #         Atom(str(round(q, 2)), lambda model, q=q: q, True)
+        #     )
         for boolean in [True, False]:
             output_type2atoms[bool].append(
                 Atom(
@@ -372,6 +372,7 @@ class LanguageGenerator:
                 for type2expressions in self.length2type2expressions.values()
             )
         )
+        print(self.results_dir)
         with open(
             self.results_dir
             / ("expressions_up_to_length_%s.dill" % current_max_len),
