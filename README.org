@@ -6,7 +6,7 @@ points to the path to the directory of this repo on your machine.
 * Usage
 ** Generating expressions
 In order to *generate* expressions for a given set of settings, use
-=[[file:src/generate_expressions.py][src/generate_expressions.py]]=
+[[file:src/generate_expressions.py][src/generate_expressions.py]]
 
 #+BEGIN_EXAMPLE sh
 python src/generate_expressions.py  --max_model_size 8 --max_expression_length 6 --json_setup Logical_index.json
