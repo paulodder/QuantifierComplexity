@@ -1,0 +1,16 @@
+* Getting started
+Install requirements see =requirements.txt= (use python3.7)
+
+This repo uses [[https://pypi.org/project/python-dotenv/][dotenv]], make sure to set =PROJECT_DIR= in =.env= so that it
+points to the path to the directory of this repo on your machine.
+* Usage
+** Generating expressions
+In order to *generate* expressions for a given set of settings, use
+=[[file:src/generate_expressions.py][src/generate_expressions.py]]=
+
+#+BEGIN_EXAMPLE sh
+python src/generate_expressions.py  --max_model_size 8 --max_expression_length 6 --json_setup Logical_index.json
+#+END_EXAMPLE
+
+The script will store the results under =PROJECT_DIR/results/= by default (but
+this behaviour can be changed by setting =RESULTS_DIR_RELATIVE= in =.env=).
