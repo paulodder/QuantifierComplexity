@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2020-04-16 Thu 17:53 -->
+<!-- 2020-04-16 Thu 18:37 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Languagegenerator documentation</title>
@@ -256,34 +256,34 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org59da4d4">1. Introduction</a></li>
-<li><a href="#orgfa03cb5">2. Representations</a>
+<li><a href="#orgc46adc2">1. Introduction</a></li>
+<li><a href="#org9445716">2. Representations</a>
 <ul>
-<li><a href="#org2d9922c">2.1. Expressions</a></li>
-<li><a href="#org48bb2de">2.2. Models</a></li>
-<li><a href="#org49056e6">2.3. Representing meanings of expressions</a>
+<li><a href="#org7373117">2.1. Expressions</a></li>
+<li><a href="#orgb3a6d44">2.2. Models</a></li>
+<li><a href="#org905f385">2.3. Representing meanings of expressions</a>
 <ul>
-<li><a href="#org4c78426">2.3.1. Boolean expressions representation</a></li>
-<li><a href="#org537fa2b">2.3.2. Int and float expression representation</a></li>
-<li><a href="#org810bd18">2.3.3. Set representations</a></li>
+<li><a href="#org74135bf">2.3.1. Boolean expressions representation</a></li>
+<li><a href="#orgf57df52">2.3.2. Int and float expression representation</a></li>
+<li><a href="#org752ec7e">2.3.3. Set representations</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#orgd880098">3. Getting started</a></li>
-<li><a href="#orgea036b2">4. How expressions are generated</a></li>
-<li><a href="#orgfac80d5">5. Scoring</a>
+<li><a href="#orgbd98c60">3. Getting started</a></li>
+<li><a href="#org99e74fe">4. How expressions are generated</a></li>
+<li><a href="#org7d17826">5. Scoring</a>
 <ul>
-<li><a href="#orge5c1ad5">5.1. Signature functions</a></li>
-<li><a href="#org6a3a4d5">5.2. Computing scores for the expressions</a></li>
-<li><a href="#orgabf0874">5.3. Visualizing results</a></li>
+<li><a href="#orgb72855e">5.1. Signature functions</a></li>
+<li><a href="#org2acd738">5.2. Computing scores for the expressions</a></li>
+<li><a href="#org251b2c2">5.3. Visualizing results</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org59da4d4" class="outline-2">
-<h2 id="org59da4d4"><span class="section-number-2">1</span> Introduction</h2>
+<div id="outline-container-orgc46adc2" class="outline-2">
+<h2 id="orgc46adc2"><span class="section-number-2">1</span> Introduction</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 The main purpose of the <code>LanguageGenerator</code> class is to generate all
@@ -368,334 +368,6 @@ sys.path.insert(0,<span style="color: #11948b;">'..'</span>)
 </pre>
 </div>
 
-<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
-
-
-<colgroup>
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-
-<col  class="org-left" />
-</colgroup>
-<tbody>
-<tr>
-<td class="org-left">True</td>
-<td class="org-left">False</td>
-<td class="org-left">(subset A A)</td>
-<td class="org-left">(subset A B)</td>
-<td class="org-left">(subset B A)</td>
-<td class="org-left">(subset B B)</td>
-<td class="org-left">(&gt; 1 (card A))</td>
-<td class="org-left">(&gt; 1 (card B))</td>
-<td class="org-left">(&gt; 2 (card A))</td>
-<td class="org-left">(&gt; 2 (card B))</td>
-<td class="org-left">(&gt; 3 (card A))</td>
-<td class="org-left">(&gt; 3 (card B))</td>
-<td class="org-left">(&gt; (card A) 1)</td>
-<td class="org-left">(&gt; (card A) 2)</td>
-<td class="org-left">(&gt; (card B) 1)</td>
-<td class="org-left">(&gt; (card B) 2)</td>
-<td class="org-left">(= 1 (card A))</td>
-<td class="org-left">(= 1 (card B))</td>
-<td class="org-left">(= 2 (card A))</td>
-<td class="org-left">(= 2 (card B))</td>
-<td class="org-left">(not (subset A B))</td>
-<td class="org-left">(not (subset B A))</td>
-<td class="org-left">(&gt; (card A) (card B))</td>
-<td class="org-left">(&gt; (card B) (card A))</td>
-<td class="org-left">(&gt;= (card A) (card B))</td>
-<td class="org-left">(&gt;= (card B) (card A))</td>
-<td class="org-left">(= (card A) (card B))</td>
-<td class="org-left">(subset A (diff A B))</td>
-<td class="org-left">(subset A (index 0 B))</td>
-<td class="org-left">(subset A (index 1 B))</td>
-<td class="org-left">(subset A (index 2 B))</td>
-<td class="org-left">(subset A (index 3 B))</td>
-<td class="org-left">(subset B (diff B A))</td>
-<td class="org-left">(subset B (index 0 A))</td>
-<td class="org-left">(subset B (index 1 A))</td>
-<td class="org-left">(subset B (index 2 A))</td>
-<td class="org-left">(subset B (index 3 A))</td>
-<td class="org-left">(subset (intersection A B) A)</td>
-<td class="org-left">(subset (union A B) A)</td>
-<td class="org-left">(subset (union A B) B)</td>
-<td class="org-left">(subset (diff A B) A)</td>
-<td class="org-left">(subset (diff B A) B)</td>
-<td class="org-left">(subset (index 0 A) B)</td>
-<td class="org-left">(subset (index 0 B) A)</td>
-<td class="org-left">(subset (index 1 A) B)</td>
-<td class="org-left">(subset (index 1 B) A)</td>
-<td class="org-left">(subset (index 2 A) B)</td>
-<td class="org-left">(subset (index 2 B) A)</td>
-<td class="org-left">(subset (index 3 A) B)</td>
-<td class="org-left">(subset (index 3 B) A)</td>
-<td class="org-left">(not (= 1 (card A)))</td>
-<td class="org-left">(not (= 1 (card B)))</td>
-<td class="org-left">(not (= 2 (card A)))</td>
-<td class="org-left">(not (= 2 (card B)))</td>
-<td class="org-left">(&gt; 1 (card (intersection A B)))</td>
-<td class="org-left">(&gt; 1 (card (index 0 A)))</td>
-<td class="org-left">(&gt; 1 (card (index 0 B)))</td>
-<td class="org-left">(&gt; 2 (card (intersection A B)))</td>
-<td class="org-left">(&gt; 2 (card (union A B)))</td>
-<td class="org-left">(&gt; 2 (card (diff A B)))</td>
-<td class="org-left">(&gt; 2 (card (diff B A)))</td>
-<td class="org-left">(&gt; 3 (card (intersection A B)))</td>
-<td class="org-left">(&gt; 3 (card (union A B)))</td>
-<td class="org-left">(&gt; 3 (card (diff A B)))</td>
-<td class="org-left">(&gt; 3 (card (diff B A)))</td>
-<td class="org-left">(&gt; (card (intersection A B)) 1)</td>
-<td class="org-left">(&gt; (card (intersection A B)) 2)</td>
-<td class="org-left">(&gt; (card (union A B)) 1)</td>
-<td class="org-left">(&gt; (card (union A B)) 2)</td>
-<td class="org-left">(&gt; (card (diff A B)) 1)</td>
-<td class="org-left">(&gt; (card (diff A B)) 2)</td>
-<td class="org-left">(&gt; (card (diff B A)) 1)</td>
-<td class="org-left">(&gt; (card (diff B A)) 2)</td>
-<td class="org-left">(= 1 (card (intersection A B)))</td>
-<td class="org-left">(= 1 (card (diff A B)))</td>
-<td class="org-left">(= 1 (card (diff B A)))</td>
-<td class="org-left">(= 2 (card (intersection A B)))</td>
-<td class="org-left">(= 2 (card (union A B)))</td>
-<td class="org-left">(= 2 (card (diff A B)))</td>
-<td class="org-left">(= 2 (card (diff B A)))</td>
-<td class="org-left">(subset A (index (card B) A))</td>
-<td class="org-left">(subset A (index (card B) B))</td>
-<td class="org-left">(subset B (index (card A) A))</td>
-<td class="org-left">(subset (index (card A) A) B)</td>
-<td class="org-left">(subset (index (card A) B) A)</td>
-<td class="org-left">(subset (index (card A) B) B)</td>
-<td class="org-left">(subset (index (card B) A) A)</td>
-<td class="org-left">(subset (index (card B) A) B)</td>
-<td class="org-left">(subset (index (card B) B) A)</td>
-<td class="org-left">(not (= (card A) (card B)))</td>
-<td class="org-left">(not (subset A (diff A B)))</td>
-<td class="org-left">(not (subset A (index 0 B)))</td>
-<td class="org-left">(not (subset A (index 1 B)))</td>
-<td class="org-left">(not (subset A (index 2 B)))</td>
-<td class="org-left">(not (subset A (index 3 B)))</td>
-<td class="org-left">(not (subset B (diff B A)))</td>
-<td class="org-left">(not (subset B (index 0 A)))</td>
-<td class="org-left">(not (subset B (index 1 A)))</td>
-<td class="org-left">(not (subset B (index 2 A)))</td>
-<td class="org-left">(not (subset B (index 3 A)))</td>
-<td class="org-left">(not (subset (index 1 A) B))</td>
-<td class="org-left">(not (subset (index 1 B) A))</td>
-<td class="org-left">(not (subset (index 2 A) B))</td>
-<td class="org-left">(not (subset (index 2 B) A))</td>
-<td class="org-left">(not (subset (index 3 A) B))</td>
-<td class="org-left">(not (subset (index 3 B) A))</td>
-</tr>
-</tbody>
-</table>
-
 <p>
 Let us generate all expressions up to length 6:
 </p>
@@ -713,12 +385,12 @@ meaning of expressions.
 </div>
 </div>
 
-<div id="outline-container-orgfa03cb5" class="outline-2">
-<h2 id="orgfa03cb5"><span class="section-number-2">2</span> Representations</h2>
+<div id="outline-container-org9445716" class="outline-2">
+<h2 id="org9445716"><span class="section-number-2">2</span> Representations</h2>
 <div class="outline-text-2" id="text-2">
 </div>
-<div id="outline-container-org2d9922c" class="outline-3">
-<h3 id="org2d9922c"><span class="section-number-3">2.1</span> Expressions</h3>
+<div id="outline-container-org7373117" class="outline-3">
+<h3 id="org7373117"><span class="section-number-3">2.1</span> Expressions</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
 We define expressions using tuples. See some examples:
@@ -763,8 +435,8 @@ We define expressions using tuples. See some examples:
 </div>
 </div>
 
-<div id="outline-container-org48bb2de" class="outline-3">
-<h3 id="org48bb2de"><span class="section-number-3">2.2</span> Models</h3>
+<div id="outline-container-orgb3a6d44" class="outline-3">
+<h3 id="orgb3a6d44"><span class="section-number-3">2.2</span> Models</h3>
 <div class="outline-text-3" id="text-2-2">
 <p>
 We represent models of size \(k\) here by a \(2\times k\) matrix, where the ith column
@@ -820,8 +492,8 @@ size n, or simply the universe if \(n\) is clear from the context.
 </div>
 </div>
 
-<div id="outline-container-org49056e6" class="outline-3">
-<h3 id="org49056e6"><span class="section-number-3">2.3</span> Representing meanings of expressions</h3>
+<div id="outline-container-org905f385" class="outline-3">
+<h3 id="org905f385"><span class="section-number-3">2.3</span> Representing meanings of expressions</h3>
 <div class="outline-text-3" id="text-2-3">
 <p>
 We use a dynamic programming approach to compute the meaning of new
@@ -833,8 +505,8 @@ type of the expressions. We distinguish between <b>boolean</b> expressions, <b>i
 </p>
 </div>
 
-<div id="outline-container-org4c78426" class="outline-4">
-<h4 id="org4c78426"><span class="section-number-4">2.3.1</span> Boolean expressions representation</h4>
+<div id="outline-container-org74135bf" class="outline-4">
+<h4 id="org74135bf"><span class="section-number-4">2.3.1</span> Boolean expressions representation</h4>
 <div class="outline-text-4" id="text-2-3-1">
 <p>
 Boolean expressions are those that are either true or false on a given model.
@@ -981,8 +653,8 @@ So an example of the meaning of a boolean expression:
 </div>
 
 
-<div id="outline-container-org537fa2b" class="outline-4">
-<h4 id="org537fa2b"><span class="section-number-4">2.3.2</span> Int and float expression representation</h4>
+<div id="outline-container-orgf57df52" class="outline-4">
+<h4 id="orgf57df52"><span class="section-number-4">2.3.2</span> Int and float expression representation</h4>
 <div class="outline-text-4" id="text-2-3-2">
 <p>
 Expressions that evaluate to integers and floats are represented by an
@@ -1128,8 +800,8 @@ Example of an integer meaning:
 </div>
 
 
-<div id="outline-container-org810bd18" class="outline-4">
-<h4 id="org810bd18"><span class="section-number-4">2.3.3</span> Set representations</h4>
+<div id="outline-container-org752ec7e" class="outline-4">
+<h4 id="org752ec7e"><span class="section-number-4">2.3.3</span> Set representations</h4>
 <div class="outline-text-4" id="text-2-3-3">
 <p>
 Representing the meaning of expressions that describe sets requires a
@@ -1239,8 +911,8 @@ where every element is at part of at least one of A or B.
 </div>
 
 
-<div id="outline-container-orgd880098" class="outline-2">
-<h2 id="orgd880098"><span class="section-number-2">3</span> Getting started</h2>
+<div id="outline-container-orgbd98c60" class="outline-2">
+<h2 id="orgbd98c60"><span class="section-number-2">3</span> Getting started</h2>
 <div class="outline-text-2" id="text-3">
 <p>
 As shown above, we can use the <code>LanguageGenerator</code> by pointing it to the
@@ -1261,8 +933,8 @@ experiment_setup json file to be used, and setting maximum model size:
 </div>
 </div>
 
-<div id="outline-container-orgea036b2" class="outline-2">
-<h2 id="orgea036b2"><span class="section-number-2">4</span> How expressions are generated</h2>
+<div id="outline-container-org99e74fe" class="outline-2">
+<h2 id="org99e74fe"><span class="section-number-2">4</span> How expressions are generated</h2>
 <div class="outline-text-2" id="text-4">
 <p>
 We generate all expressions by starting with expressions of length 1, storing
@@ -1292,35 +964,86 @@ Let's see what all unique boolean expressions up to length 4 looks like:
 </pre>
 </div>
 
-<pre class="example">
-['True',
- 'False',
- ('subset', 'A', 'A'),
- ('subset', 'A', 'B'),
- ('subset', 'B', 'A'),
- ('subset', 'B', 'B'),
- ('&gt;', '1', ('card', 'A')),
- ('&gt;', '1', ('card', 'B')),
- ('&gt;', '2', ('card', 'A')),
- ('&gt;', '2', ('card', 'B')),
- ('&gt;', '3', ('card', 'A')),
- ('&gt;', '3', ('card', 'B')),
- ('&gt;', ('card', 'A'), '1'),
- ('&gt;', ('card', 'A'), '2'),
- ('&gt;', ('card', 'B'), '1'),
- ('&gt;', ('card', 'B'), '2'),
- ('=', '1', ('card', 'A')),
- ('=', '1', ('card', 'B')),
- ('=', '2', ('card', 'A')),
- ('=', '2', ('card', 'B')),
- ('not', ('subset', 'A', 'B')),
- ('not', ('subset', 'B', 'A'))]
-</pre>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">True</td>
+<td class="org-left">False</td>
+<td class="org-left">(subset A A)</td>
+<td class="org-left">(subset A B)</td>
+<td class="org-left">(subset B A)</td>
+<td class="org-left">(subset B B)</td>
+<td class="org-left">(&gt; 1 (card A))</td>
+<td class="org-left">(&gt; 1 (card B))</td>
+<td class="org-left">(&gt; 2 (card A))</td>
+<td class="org-left">(&gt; 2 (card B))</td>
+<td class="org-left">(&gt; 3 (card A))</td>
+<td class="org-left">(&gt; 3 (card B))</td>
+<td class="org-left">(&gt; (card A) 1)</td>
+<td class="org-left">(&gt; (card A) 2)</td>
+<td class="org-left">(&gt; (card B) 1)</td>
+<td class="org-left">(&gt; (card B) 2)</td>
+<td class="org-left">(= 1 (card A))</td>
+<td class="org-left">(= 1 (card B))</td>
+<td class="org-left">(= 2 (card A))</td>
+<td class="org-left">(= 2 (card B))</td>
+<td class="org-left">(not (subset A B))</td>
+<td class="org-left">(not (subset B A))</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 
-<div id="outline-container-orgfac80d5" class="outline-2">
-<h2 id="orgfac80d5"><span class="section-number-2">5</span> Scoring</h2>
+<div id="outline-container-org7d17826" class="outline-2">
+<h2 id="org7d17826"><span class="section-number-2">5</span> Scoring</h2>
 <div class="outline-text-2" id="text-5">
 <p>
 The <code>LanguageGenerator</code> is also able to score the expressions it has generated
@@ -1390,8 +1113,8 @@ model.
 </p>
 </div>
 
-<div id="outline-container-orge5c1ad5" class="outline-3">
-<h3 id="orge5c1ad5"><span class="section-number-3">5.1</span> Signature functions</h3>
+<div id="outline-container-orgb72855e" class="outline-3">
+<h3 id="orgb72855e"><span class="section-number-3">5.1</span> Signature functions</h3>
 <div class="outline-text-3" id="text-5-1">
 <p>
 We defined signature functions for graded measures of monotonicity,
@@ -1539,8 +1262,8 @@ satisfies the \(j^{th}\) expression.
 </div>
 
 
-<div id="outline-container-org6a3a4d5" class="outline-3">
-<h3 id="org6a3a4d5"><span class="section-number-3">5.2</span> Computing scores for the expressions</h3>
+<div id="outline-container-org2acd738" class="outline-3">
+<h3 id="org2acd738"><span class="section-number-3">5.2</span> Computing scores for the expressions</h3>
 <div class="outline-text-3" id="text-5-2">
 <p>
 So while the signature function computes the induced partition, the
@@ -1667,8 +1390,8 @@ dtype: float64
 </div>
 </div>
 
-<div id="outline-container-orgabf0874" class="outline-3">
-<h3 id="orgabf0874"><span class="section-number-3">5.3</span> Visualizing results</h3>
+<div id="outline-container-org251b2c2" class="outline-3">
+<h3 id="org251b2c2"><span class="section-number-3">5.3</span> Visualizing results</h3>
 <div class="outline-text-3" id="text-5-3">
 <p>
 In addition to computing the scores, the <code>LanguageGenerator</code> also implements
@@ -1820,7 +1543,6 @@ monotonicity, we do:
 </p>
 </div>
 
-
 <p>
 Of if we want to produce a 3d scatter plot:
 </p>
@@ -1871,7 +1593,7 @@ In addition, it is possible to produce 3d scatter gifs:
 <div id="postamble" class="status">
 <p class="date">Date: April 14, 2020</p>
 <p class="author">Author: Paul Lodder</p>
-<p class="date">Created: 2020-04-16 Thu 17:53</p>
+<p class="date">Created: 2020-04-16 Thu 18:37</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
