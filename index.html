@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2020-04-16 Thu 15:07 -->
+<!-- 2020-04-16 Thu 15:18 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Languagegenerator documentation</title>
@@ -256,42 +256,39 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org664c89b">1. Introduction</a></li>
-<li><a href="#org81a4e31">2. Representations</a>
+<li><a href="#org15a204e">1. Introduction</a></li>
+<li><a href="#orgcb334e6">2. Representations</a>
 <ul>
-<li><a href="#orgbf800af">2.1. Expressions</a></li>
-<li><a href="#org7ca744c">2.2. Models</a></li>
-<li><a href="#org1a5f7c7">2.3. Representing meanings of expressions</a>
+<li><a href="#org8707720">2.1. Expressions</a></li>
+<li><a href="#org9828cb6">2.2. Models</a></li>
+<li><a href="#org89e01ad">2.3. Representing meanings of expressions</a>
 <ul>
-<li><a href="#org12bd9b8">2.3.1. Boolean expressions representation</a></li>
-<li><a href="#orgbf9fb17">2.3.2. Int and float expression representation</a></li>
-<li><a href="#org08fb935">2.3.3. Set representations</a></li>
+<li><a href="#orgb8a0e3c">2.3.1. Boolean expressions representation</a></li>
+<li><a href="#orga276186">2.3.2. Int and float expression representation</a></li>
+<li><a href="#org749d85c">2.3.3. Set representations</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#orgefeffef">3. Getting started</a></li>
-<li><a href="#org2a788eb">4. How expressions are generated</a></li>
-<li><a href="#org7dfbd03">5. Scoring</a>
+<li><a href="#orgd3593d1">3. Getting started</a></li>
+<li><a href="#org7cf7dc4">4. How expressions are generated</a></li>
+<li><a href="#orgcba1857">5. Scoring</a>
 <ul>
-<li><a href="#orgb4d526e">5.1. Signature functions</a></li>
-<li><a href="#org5ef323d">5.2. Computing scores for the expressions</a></li>
-<li><a href="#org63b424e">5.3. Visualizing results</a></li>
+<li><a href="#org3cae08c">5.1. Signature functions</a></li>
+<li><a href="#orgc7e641e">5.2. Computing scores for the expressions</a></li>
+<li><a href="#org6cebdc6">5.3. Visualizing results</a></li>
 </ul>
 </li>
-<li><a href="#orgbfc74e5">6. Getting started</a>
+<li><a href="#org945242f">6. Getting started</a>
 <ul>
-<li><a href="#org38c1237">6.1. Generating expressions</a></li>
+<li><a href="#org467b39e">6.1. Generating expressions</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
-<p>
-b#+BIND: org-export-use-babel nil
-</p>
-<div id="outline-container-org664c89b" class="outline-2">
-<h2 id="org664c89b"><span class="section-number-2">1</span> Introduction</h2>
+<div id="outline-container-org15a204e" class="outline-2">
+<h2 id="org15a204e"><span class="section-number-2">1</span> Introduction</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 The main purpose of the <code>LanguageGenerator</code> class is to generate all
@@ -388,12 +385,12 @@ meaning of expressions.
 </div>
 </div>
 
-<div id="outline-container-org81a4e31" class="outline-2">
-<h2 id="org81a4e31"><span class="section-number-2">2</span> Representations</h2>
+<div id="outline-container-orgcb334e6" class="outline-2">
+<h2 id="orgcb334e6"><span class="section-number-2">2</span> Representations</h2>
 <div class="outline-text-2" id="text-2">
 </div>
-<div id="outline-container-orgbf800af" class="outline-3">
-<h3 id="orgbf800af"><span class="section-number-3">2.1</span> Expressions</h3>
+<div id="outline-container-org8707720" class="outline-3">
+<h3 id="org8707720"><span class="section-number-3">2.1</span> Expressions</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
 We define expressions using tuples. See some examples:
@@ -438,8 +435,8 @@ We define expressions using tuples. See some examples:
 </div>
 </div>
 
-<div id="outline-container-org7ca744c" class="outline-3">
-<h3 id="org7ca744c"><span class="section-number-3">2.2</span> Models</h3>
+<div id="outline-container-org9828cb6" class="outline-3">
+<h3 id="org9828cb6"><span class="section-number-3">2.2</span> Models</h3>
 <div class="outline-text-3" id="text-2-2">
 <p>
 We represent models of size \(k\) here by a \(2\times k\) matrix, where the ith column
@@ -495,8 +492,8 @@ size n, or simply the universe if \(n\) is clear from the context.
 </div>
 </div>
 
-<div id="outline-container-org1a5f7c7" class="outline-3">
-<h3 id="org1a5f7c7"><span class="section-number-3">2.3</span> Representing meanings of expressions</h3>
+<div id="outline-container-org89e01ad" class="outline-3">
+<h3 id="org89e01ad"><span class="section-number-3">2.3</span> Representing meanings of expressions</h3>
 <div class="outline-text-3" id="text-2-3">
 <p>
 We use a dynamic programming approach to compute the meaning of new
@@ -508,8 +505,8 @@ type of the expressions. We distinguish between <b>boolean</b> expressions, <b>i
 </p>
 </div>
 
-<div id="outline-container-org12bd9b8" class="outline-4">
-<h4 id="org12bd9b8"><span class="section-number-4">2.3.1</span> Boolean expressions representation</h4>
+<div id="outline-container-orgb8a0e3c" class="outline-4">
+<h4 id="orgb8a0e3c"><span class="section-number-4">2.3.1</span> Boolean expressions representation</h4>
 <div class="outline-text-4" id="text-2-3-1">
 <p>
 Boolean expressions are those that are either true or false on a given model.
@@ -656,8 +653,8 @@ So an example of the meaning of a boolean expression:
 </div>
 
 
-<div id="outline-container-orgbf9fb17" class="outline-4">
-<h4 id="orgbf9fb17"><span class="section-number-4">2.3.2</span> Int and float expression representation</h4>
+<div id="outline-container-orga276186" class="outline-4">
+<h4 id="orga276186"><span class="section-number-4">2.3.2</span> Int and float expression representation</h4>
 <div class="outline-text-4" id="text-2-3-2">
 <p>
 Expressions that evaluate to integers and floats are represented by an
@@ -803,8 +800,8 @@ Example of an integer meaning:
 </div>
 
 
-<div id="outline-container-org08fb935" class="outline-4">
-<h4 id="org08fb935"><span class="section-number-4">2.3.3</span> Set representations</h4>
+<div id="outline-container-org749d85c" class="outline-4">
+<h4 id="org749d85c"><span class="section-number-4">2.3.3</span> Set representations</h4>
 <div class="outline-text-4" id="text-2-3-3">
 <p>
 Representing the meaning of expressions that describe sets requires a
@@ -913,8 +910,8 @@ where every element is at part of at least one of A or B.
 </div>
 
 
-<div id="outline-container-orgefeffef" class="outline-2">
-<h2 id="orgefeffef"><span class="section-number-2">3</span> Getting started</h2>
+<div id="outline-container-orgd3593d1" class="outline-2">
+<h2 id="orgd3593d1"><span class="section-number-2">3</span> Getting started</h2>
 <div class="outline-text-2" id="text-3">
 <p>
 As shown above, we can use the <code>LanguageGenerator</code> by pointing it to the
@@ -935,8 +932,8 @@ experiment_setup json file to be used, and setting maximum model size:
 </div>
 </div>
 
-<div id="outline-container-org2a788eb" class="outline-2">
-<h2 id="org2a788eb"><span class="section-number-2">4</span> How expressions are generated</h2>
+<div id="outline-container-org7cf7dc4" class="outline-2">
+<h2 id="org7cf7dc4"><span class="section-number-2">4</span> How expressions are generated</h2>
 <div class="outline-text-2" id="text-4">
 <p>
 We generate all expressions by starting with expressions of length 1, storing
@@ -993,8 +990,8 @@ Let's see what all unique boolean expressions up to length 4 looks like:
 </div>
 </div>
 
-<div id="outline-container-org7dfbd03" class="outline-2">
-<h2 id="org7dfbd03"><span class="section-number-2">5</span> Scoring</h2>
+<div id="outline-container-orgcba1857" class="outline-2">
+<h2 id="orgcba1857"><span class="section-number-2">5</span> Scoring</h2>
 <div class="outline-text-2" id="text-5">
 <p>
 The <code>LanguageGenerator</code> is also able to score the expressions it has generated
@@ -1064,8 +1061,8 @@ model.
 </p>
 </div>
 
-<div id="outline-container-orgb4d526e" class="outline-3">
-<h3 id="orgb4d526e"><span class="section-number-3">5.1</span> Signature functions</h3>
+<div id="outline-container-org3cae08c" class="outline-3">
+<h3 id="org3cae08c"><span class="section-number-3">5.1</span> Signature functions</h3>
 <div class="outline-text-3" id="text-5-1">
 <p>
 We defined signature functions for graded measures of monotonicity,
@@ -1213,8 +1210,8 @@ satisfies the \(j^{th}\) expression.
 </div>
 
 
-<div id="outline-container-org5ef323d" class="outline-3">
-<h3 id="org5ef323d"><span class="section-number-3">5.2</span> Computing scores for the expressions</h3>
+<div id="outline-container-orgc7e641e" class="outline-3">
+<h3 id="orgc7e641e"><span class="section-number-3">5.2</span> Computing scores for the expressions</h3>
 <div class="outline-text-3" id="text-5-2">
 <p>
 So while the signature function computes the induced partition, the
@@ -1341,8 +1338,8 @@ dtype: float64
 </div>
 </div>
 
-<div id="outline-container-org63b424e" class="outline-3">
-<h3 id="org63b424e"><span class="section-number-3">5.3</span> Visualizing results</h3>
+<div id="outline-container-org6cebdc6" class="outline-3">
+<h3 id="org6cebdc6"><span class="section-number-3">5.3</span> Visualizing results</h3>
 <div class="outline-text-3" id="text-5-3">
 <p>
 In addition to computing the scores, the <code>LanguageGenerator</code> also implements
@@ -1765,12 +1762,12 @@ full_outpath.relative_to(os.getcwd())
 </div>
 </div>
 
-<div id="outline-container-orgbfc74e5" class="outline-2">
-<h2 id="orgbfc74e5"><span class="section-number-2">6</span> Getting started</h2>
+<div id="outline-container-org945242f" class="outline-2">
+<h2 id="org945242f"><span class="section-number-2">6</span> Getting started</h2>
 <div class="outline-text-2" id="text-6">
 </div>
-<div id="outline-container-org38c1237" class="outline-3">
-<h3 id="org38c1237"><span class="section-number-3">6.1</span> Generating expressions</h3>
+<div id="outline-container-org467b39e" class="outline-3">
+<h3 id="org467b39e"><span class="section-number-3">6.1</span> Generating expressions</h3>
 <div class="outline-text-3" id="text-6-1">
 <pre class="example">
 ['True',
@@ -1808,7 +1805,7 @@ to size 3.
 <div id="postamble" class="status">
 <p class="date">Date: April 14, 2020</p>
 <p class="author">Author: Paul Lodder</p>
-<p class="date">Created: 2020-04-16 Thu 15:07</p>
+<p class="date">Created: 2020-04-16 Thu 15:18</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
