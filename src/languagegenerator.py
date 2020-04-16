@@ -1,4 +1,5 @@
 import dotenv
+import imageio
 import sys
 import os
 import sys
@@ -7,11 +8,13 @@ import json
 import dill
 import bitarray
 import numpy as np
+import pandas as pd
 import itertools as it
+import matplotlib.pyplot as plt
 from pathlib import Path
 from collections import namedtuple
 from collections import defaultdict
-from utils import make_experiment_dir_name
+
 
 dotenv.load_dotenv(dotenv.find_dotenv())
 PROJECT_DIR = Path(os.getenv("PROJECT_DIR"))
@@ -19,6 +22,7 @@ JSON_SETUP_DIR_RELATIVE = os.getenv("JSON_SETUP_DIR_RELATIVE")
 RESULTS_DIR_RELATIVE = os.getenv("RESULTS_DIR_RELATIVE")
 sys.path.insert(0, str(PROJECT_DIR / "src"))
 import operators
+import utils
 
 
 Atom = namedtuple("Atom", "content func is_constant")
@@ -35,9 +39,9 @@ class LanguageGenerator:
     def __init__(
         self,
         max_model_size,
+        experiment_setup="",
         dest_dir=Path(PROJECT_DIR) / Path(RESULTS_DIR_RELATIVE),
         store_at_each_length=1,
-        json_path="",
     ):
         """Initializes LanguageGenerator object
         :param max_model_size: The size of models on which expressions will be
@@ -45,13 +49,14 @@ class LanguageGenerator:
         :param dest_dir: Directory in which to store results
         :param store_at_each_length: If 1, stores expressions and itself at
         every length
-        :param json_path: Name of json file """
+        :param experiment_setup: Name of experiment (corresponds to a .json
+        file)"""
 
         self.max_model_size = max_model_size
         self.dest_dir = dest_dir
         self.store_at_each_length = store_at_each_length
-        self.json_path = json_path
-        self._load_json(json_path)
+        self.experiment_setup = experiment_setup
+        self._load_json(experiment_setup)
         self.N_OF_MODELS = (
             sum(self.number_of_subsets ** i for i in range(max_model_size + 1))
             - 1
@@ -60,10 +65,13 @@ class LanguageGenerator:
         self._set_operators()
         self._set_size2range()
         self.meaning_matrix = None
+        self.signature_function2exp2score = dict()
 
     def _set_output_dirs(self):
         """Set output directories"""
-        self.results_dir = Path(self.dest_dir) / make_experiment_dir_name(
+        self.results_dir = Path(
+            self.dest_dir
+        ) / utils.make_experiment_dir_name(
             self.max_model_size, self.experiment_name
         )
         self.figure_dir = self.results_dir / "figures"
@@ -101,11 +109,13 @@ class LanguageGenerator:
                         if all(any(a_b) for a_b in zip(A_repr, B_repr)):
                             yield (A_repr, B_repr)
 
-    def _load_json(self, json_path):
+    def _load_json(self, experiment_setup):
         """Loads JSON file from json directory and sets settings accordingly"""
-        if json_path:
+        if experiment_setup:
             with open(
-                Path(PROJECT_DIR) / Path(JSON_SETUP_DIR_RELATIVE) / json_path,
+                Path(PROJECT_DIR)
+                / Path(JSON_SETUP_DIR_RELATIVE)
+                / f"{experiment_setup}.json",
                 "r",
             ) as f:
                 self.json_data = json.load(f)
@@ -202,7 +212,8 @@ class LanguageGenerator:
                 meanings.append(
                     self.output_type2expression2meaning[output_type][arg]
                 )
-            except:  # should only occur when evaluating a 'new 'meaning not created in this algorithm
+            except:  # should only occur when evaluating a 'new 'meaning not
+                # created in this algorithm
                 new_meaning = self.compute_meaning(arg)
                 meanings.append(new_meaning)
         return main_operator.func(*meanings)
@@ -226,23 +237,23 @@ class LanguageGenerator:
         """Generate all atoms and set certain featues accordingly"""
         # self.expression2meaning = dict()
         self.output_type2expression2meaning = dict(
-            (output_type, dict())
-            for output_type in [bool, int, float, operators.SetPlaceholder]
+            (output_type, dict()) for output_type in [bool, int, float, set]
         )
         output_type2atoms = {
             int: [],
             # float: [],
             bool: [],
-            operators.SetPlaceholder: [],
+            set: [],
         }
+        # Initialize the integer atoms
         for i in range(0, self.max_model_size + 1, 1):
             output_type2atoms[int].append(
-                Atom(str(i), lambda model, i=i: 0 + i, True)
+                Atom(str(i), lambda model, i=i: i, True)
             )
         set_name2relevant_index = {"A": 0, "B": 1}
         for set_name in ["A", "B"]:
             rel_ind = set_name2relevant_index[set_name]
-            output_type2atoms[operators.SetPlaceholder].append(
+            output_type2atoms[set].append(
                 Atom(
                     set_name,
                     lambda model, rel_ind=rel_ind: np.array(
@@ -282,8 +293,8 @@ class LanguageGenerator:
     def _ignore_or_add(self, expr):
         """Generates meaning tuple for expression, checks if we already have an
         expression with that meaning, and if so does not do anything with it.
-        output_type2expression2meaning mapping according to the output type of
-        the expression
+        Else updates output_type2expression2meaning mapping according to the output
+        type of the expression
         """
         meaning = self.compute_meaning(expr)
         output_type = self.get_output_type(expr)
@@ -322,7 +333,7 @@ class LanguageGenerator:
                         input_type
                     ]:
                         expr = (op_name, sub_expr)
-                        unique_meaning = self._ignore_or_add(expr,)
+                        unique_meaning = self._ignore_or_add(expr)
                         if unique_meaning:
                             type2expressions[output_type].append(expr)
                 elif len(input_types) == 2:
@@ -364,7 +375,9 @@ class LanguageGenerator:
     def write_expressions(self):
         """Writes current expressions and itself to dill file"""
         print(f"Interim saving of current state (to {self.results_dir}")
-        experiment_name = os.path.splitext(os.path.basename(self.json_path))[0]
+        experiment_name = os.path.splitext(
+            os.path.basename(self.experiment_setup)
+        )[0]
         current_max_len = max(self.length2type2expressions.keys())
         current_expressions = list(
             it.chain.from_iterable(
@@ -399,25 +412,189 @@ class LanguageGenerator:
         return False
 
     def _compute_meaning_matrix(self):
-        """returns matrix where the ith row corresponds to the meaning of the
-        ith expression (of those it has computed so far)"""
-        self.sorted_exps = sorted(
+        """Computes matrix where the cell in the ith row and jth column is 1 iff
+        the ith model belongs to the jth expression/quantifier
+        :returns: None, but sets self.meaning_matrix accordingly"""
+        # Sort all expressions that evaluate to a boolean
+        sorted_exps = sorted(
             list(self.output_type2expression2meaning[bool]),
             key=str,
             reverse=True,
         )
-        out = np.zeros((len(self.sorted_exps), self.N_OF_MODELS))
-        for i, exp in enumerate(self.sorted_exps):
-            out[i, :] = self.output_type2expression2meaning[bool][exp]
-        self.meaning_matrix = out
+        out = np.zeros((self.N_OF_MODELS, len(sorted_exps)))
+        # For each ith expression, set the ith column to the meaning vector for
+        # that expression
+        for i, exp in enumerate(sorted_exps):
+            out[:, i] = self.output_type2expression2meaning[bool][exp]
+        # Convert to df, such that it is indexed by the models, and column names
+        # are the expressions
+        out = pd.DataFrame(
+            out,
+            columns=sorted_exps,
+            index=[utils.tuple_format(m) for m in self.generate_universe()],
+        )
+        self.meaning_matrix = out.astype(int)
 
-    def compute_and_set_meaning_matrix(self):
-        """Computes and sets meaning_matrix"""
-        if self.meaning_matrix is not None:
-            nof_own_expressions = len(
-                self.output_type2expression2meaning[bool]
+    def get_meaning_matrix(self):
+        if self.meaning_matrix is None:
+            self._compute_meaning_matrix()
+        return self.meaning_matrix
+
+    def _compute_exp2score(self, signature_function):
+        """Given a signature_vector function, computes the score for each
+        expression
+        :param signature_function: Given a generator for the models, constructs
+        a vector where the ith element denotes the signature tuple of the ith
+        model, or a matrix of same shape as meaning_matrix"""
+        mm = self.get_meaning_matrix()
+        # Get signatures for this meaning matrix
+        signatures = signature_function(mm)
+        # Signature for a model is expression invariant if it is simply a vector
+        if len(signatures.shape) == 1:
+            # Add signature as a column to allow for groupbys
+            mm["signature"] = signatures.values
+            # Compute for each signature, the probability of it occurring
+            signature2prob = mm["signature"].value_counts(1).sort_index()
+            # Compute matrix where the element in posn (i, j) denotes the
+            # probability of the jth expression being true in a model given
+            # that the model is of the ith signature type
+            signature_exp2conditional_prob_Q = (
+                mm.groupby("signature").mean().sort_index()
             )
-            if self.meaning_matrix.shape[0] == nof_own_expressions:
-                return
-            else:  # need to make new one
-                self._compute_meaning_matrix(self)
+            del mm["signature"]
+        else:  # Signature for a model depends on the expression
+            signature2prob = signatures.apply(
+                lambda s: s.value_counts(normalize=True)
+            ).fillna(0)
+            all_signatures = sorted(np.unique(signatures.values.ravel()))
+            # Start computing for each signature value, the probability of
+            # an expression being true on a model given signature
+            signature_exp2conditional_prob_Q = pd.DataFrame(index=mm.columns)
+            for signature_val in all_signatures:
+                mask = signatures == signature_val
+                # Compute number of models for each expression with this
+                # signature
+                exp2nof_signature_occurrences = mask.sum()
+                # Compute number of models for each expression with this
+                # signature that also satisfy the expression
+                exp2nof_true_model_occurrences = (mm & mask).sum()
+                # For this signature value, compute for each expression it's
+                # probability of being true given this signature value
+                exp2cond_prob_Q = (
+                    exp2nof_true_model_occurrences
+                    / exp2nof_signature_occurrences
+                )
+                signature_exp2conditional_prob_Q[
+                    signature_val
+                ] = exp2cond_prob_Q
+            # Replace nans with 0
+            signature_exp2conditional_prob_Q.fillna(0, inplace=True)
+            # Take transpose so the df is indexed by signature values, and
+            # columns are the expressions
+            signature_exp2conditional_prob_Q = (
+                signature_exp2conditional_prob_Q.T
+            )
+        # Now compute the binary entropy for each P(1_Q|signature)
+        signature_exp2cond_entropy = utils.element_wise_binary_entropy(
+            signature_exp2conditional_prob_Q
+        )
+        # For the conditional entropy values for each expression-model value,
+        # compute the 'weighted' entropy value by multiplying with the
+        # probability of that signature occurring.
+        signature_exp2cond_entropy_weighted = signature_exp2cond_entropy.mul(
+            signature2prob,
+            axis="index"  # Axis=index ensures proper multiplication in the case
+            # of model-variant signature values (i.e. signature2prob is vector)
+        )
+        # Series that maps each expression to its probability of being true
+        exp2prob = mm.mean()
+        # Map each expression to its entropy (i.e. entropy of the RV 1_Q)
+        exp2entropy = utils.element_wise_binary_entropy(exp2prob)
+        # Now we compute the 'normalized' score by dividing the conditional
+        # entropy by the actual entropy. If this value is close to zero we know
+        # that knowing the signature value gives us a lot of information on the
+        # truth value of the expression in a given model
+        exp2normalized_cond_entropy = (
+            signature_exp2cond_entropy_weighted.sum() / exp2entropy
+        ).fillna(0)
+        # Now we subtract the scores from 1, to make sure that those
+        # expressions for which scores are low (i.e. signatures tell us a lot)
+        # are mapped to values closer to 1
+        exp2score = 1 - exp2normalized_cond_entropy
+        self.signature_function2exp2score[signature_function.name] = exp2score
+
+    def get_exp2score(self, signature_function):
+        if not signature_function.name in self.signature_function2exp2score:
+            self._compute_exp2score(signature_function)
+        return self.signature_function2exp2score[signature_function.name]
+
+    def _plot_fig_ax3d(self, funcs):
+        plt.close("all")
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection="3d")
+        x, y, z = [self.get_exp2score(sign_func) for sign_func in funcs]
+        name_x, name_y, name_z = [sign_func.name for sign_func in funcs]
+        ax.scatter(x, y, z, alpha=0.3)
+        ax.set_xlabel(name_x)
+        ax.set_ylabel(name_y)
+        ax.set_zlabel(name_z)
+        ax.set_xlim(0, 1)
+        ax.set_ylim(0, 1)
+        ax.set_zlim(0, 1)
+        max_exp_len = max(self.length2type2expressions.keys())
+        fig.suptitle(
+            f"{name_x} vs. {name_y} vs. {name_z} scores for expressions\n (max_model_size={self.max_model_size}, max_expression_length={max_exp_len})"
+        ).set_size(10)
+        return fig, ax
+
+    def _plot_scatter_3d(self, funcs):
+        fig, ax = self._plot_fig_ax3d(funcs)
+        base_name = "-vs-".join([sign_func.name for sign_func in funcs])
+        fname = f"{base_name}.png"
+        fig.savefig(self.figure_dir / fname)
+        return self.figure_dir / fname
+
+    def _plot_scatter_2d(self, funcs):
+        x, y = [self.get_exp2score(sign_func) for sign_func in funcs]
+        max_exp_len = max(self.length2type2expressions.keys())
+        name_x, name_y = [sign_func.name for sign_func in funcs]
+        plt.close("all")
+        sc = plt.scatter(x, y,)
+        plt.xlabel(name_x)
+        plt.xlim(0, 1)
+        plt.ylabel(name_y)
+        plt.ylim(0, 1)
+        plt.axis("equal")
+        plt.title(
+            f"{name_x} vs. {name_y} scores for expressions\n (max_model_size={self.max_model_size}, max_expression_length={max_exp_len})"
+        ).set_size(10)
+        fname = f"{name_x}-vs-{name_y}.png"
+        plt.savefig(self.figure_dir / fname)
+        return self.figure_dir / fname
+
+    def plot_png(self, funcs):
+        """Given a list of 2 or 3 functions, produces a scatter plot accordingly"""
+        if len(funcs) == 2:
+            out_fname = self._plot_scatter_2d(funcs)
+        if len(funcs) == 3:
+            out_fname = self._plot_scatter_3d(funcs)
+        return out_fname
+
+    def plot_gif(self, funcs, angle_shift_per_frame=30, frame_rate=1 / 24):
+        """Given a list of 2 or 3 functions, produces a scatter plot accordingly"""
+        tmp_dir = Path(self.figure_dir / "pngs_for_gifs")
+        tmp_dir.mkdir(exist_ok=True)
+        fig, ax = self._plot_fig_ax3d(funcs)
+        base_name = "-".join(f.name for f in funcs)
+        images = []
+        for angle in range(0, 360, angle_shift_per_frame):
+            ax.view_init(30, angle)
+            plt.draw()
+            out_fname = f"{base_name}_rotation={str(angle).zfill(3)}.png"
+            fig.savefig(tmp_dir / out_fname)
+            images.append(imageio.imread(tmp_dir / out_fname))
+        fname_gif = f"{base_name}-angle_shift={angle_shift_per_frame}-fr={round(frame_rate, 3)}.gif"
+        imageio.mimsave(
+            self.figure_dir / fname_gif, images, duration=frame_rate,
+        )
+        return self.figure_dir / fname_gif
