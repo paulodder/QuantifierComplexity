@@ -14,3 +14,5 @@ python src/generate_expressions.py  --max_model_size 8 --max_expression_length 6
 
 The script will store the results under =PROJECT_DIR/results/= by default (but
 this behaviour can be changed by setting =RESULTS_DIR_RELATIVE= in =.env=).
+
+For more detailed documentation see https://paulodder.github.io/QuantifierComplexity/index.html
