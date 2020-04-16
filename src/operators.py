@@ -56,28 +56,28 @@ def index_func(i, set_repr, SIZE2RANGE):
     return out
 
 
-def index_func(i, set_repr):
-    global SIZE2RANGE
-    out = []
-    i = i.astype(np.uint8)
-    # print("HERE", i)
-    if all(i == 0):  # no zero based indexing for normal humans
-        return [
-            np.zeros(set_repr_size.shape, dtype=np.uint8)
-            for set_repr_size in set_repr
-        ]
-    for size_minus_one, set_repr_size in enumerate(set_repr):
-        size = size_minus_one + 1
-        rel_range = SIZE2RANGE[size]
-        to_compare = np.repeat(
-            [i[rel_range[0] : rel_range[1]]], set_repr_size.shape[0], axis=0
-        )
+# def index_func(i, set_repr):
+#     global SIZE2RANGE
+#     out = []
+#     i = i.astype(np.uint8)
+#     # print("HERE", i)
+#     if all(i == 0):  # no zero based indexing for normal humans
+#         return [
+#             np.zeros(set_repr_size.shape, dtype=np.uint8)
+#             for set_repr_size in set_repr
+#         ]
+#     for size_minus_one, set_repr_size in enumerate(set_repr):
+#         size = size_minus_one + 1
+#         rel_range = SIZE2RANGE[size]
+#         to_compare = np.repeat(
+#             [i[rel_range[0] : rel_range[1]]], set_repr_size.shape[0], axis=0
+#         )
 
-        x, y = np.where(set_repr_size.cumsum(0) == to_compare)
-        new_repr = np.zeros(set_repr_size.shape)
-        new_repr[x, y] = 1
-        out.append(new_repr.astype(np.uint8))
-    return out
+#         x, y = np.where(set_repr_size.cumsum(0) == to_compare)
+#         new_repr = np.zeros(set_repr_size.shape)
+#         new_repr[x, y] = 1
+#         out.append(new_repr.astype(np.uint8))
+#     return out
 
 
 def subset_func(set_repr_0, set_repr_1):
@@ -134,18 +134,16 @@ def init_operators(max_model_size, number_of_subsets=4):
         "index": Operator(
             "index",
             lambda i, s, size2range=SIZE2RANGE: index_func(i, s, size2range),
-            (int, SetPlaceholder),
-            SetPlaceholder,
+            (int, set),
+            set,
         ),
         "diff": Operator(
             "diff",
             diff_func,  # (s1.get_set(model) - s2.get_set(model))
-            (SetPlaceholder, SetPlaceholder),
-            SetPlaceholder,
+            (set, set),
+            set,
         ),
-        "subset": Operator(
-            "subset", subset_func, (SetPlaceholder, SetPlaceholder), bool
-        ),
+        "subset": Operator("subset", subset_func, (set, set), bool),
         ">f": Operator(">f", lambda x, y: x > y, (float, float), bool),
         "=f": Operator(
             "=f", lambda x, y: vectorized_isclose(x, y), (float, float), bool
@@ -170,7 +168,7 @@ def init_operators(max_model_size, number_of_subsets=4):
                     )
                 )
             ),
-            (SetPlaceholder,),
+            (set,),
             int,
         ),
         "intersection": Operator(
@@ -179,14 +177,14 @@ def init_operators(max_model_size, number_of_subsets=4):
             # lambda model, x, y: tuple(
             #     x.char_func(obj) and y.char_func(obj) for obj in model
             # ),
-            (SetPlaceholder, SetPlaceholder),
-            SetPlaceholder,
+            (set, set),
+            set,
         ),
         "union": Operator(
             "union",
             lambda x_repr, y_repr: [x | y for x, y in zip(x_repr, y_repr)],
-            (SetPlaceholder, SetPlaceholder),
-            SetPlaceholder,
+            (set, set),
+            set,
         ),
         "and": Operator("and", lambda x, y: x & y, (bool, bool), bool),
         "or": Operator("or", lambda x, y: x | y, (bool, bool), bool),
@@ -196,18 +194,14 @@ def init_operators(max_model_size, number_of_subsets=4):
 
 
 OPERATORS = {
-    "index": Operator(
-        "index", index_func, (int, SetPlaceholder), SetPlaceholder
-    ),
+    "index": Operator("index", index_func, (int, set), set),
     "diff": Operator(
         "diff",
         diff_func,  # (s1.get_set(model) - s2.get_set(model))
-        (SetPlaceholder, SetPlaceholder),
-        SetPlaceholder,
+        (set, set),
+        set,
     ),
-    "subset": Operator(
-        "subset", subset_func, (SetPlaceholder, SetPlaceholder), bool
-    ),
+    "subset": Operator("subset", subset_func, (set, set), bool),
     ">f": Operator(">f", lambda x, y: x > y, (float, float), bool),
     "=f": Operator(
         "=f", lambda x, y: vectorized_isclose(x, y), (float, float), bool
@@ -232,7 +226,7 @@ OPERATORS = {
                 )
             )
         ),
-        (SetPlaceholder,),
+        (set,),
         int,
     ),
     "intersection": Operator(
@@ -241,25 +235,25 @@ OPERATORS = {
         # lambda model, x, y: tuple(
         #     x.char_func(obj) and y.char_func(obj) for obj in model
         # ),
-        (SetPlaceholder, SetPlaceholder),
-        SetPlaceholder,
+        (set, set),
+        set,
     ),
     "union": Operator(
         "union",
         lambda x_repr, y_repr: [x | y for x, y in zip(x_repr, y_repr)],
-        (SetPlaceholder, SetPlaceholder),
-        SetPlaceholder,
+        (set, set),
+        set,
     ),
     "and": Operator("and", lambda x, y: x & y, (bool, bool), bool),
     "or": Operator("or", lambda x, y: x | y, (bool, bool), bool),
     "not": Operator("not", lambda x: np.invert(x), (bool,), bool),
     # "empty": Operator(
     #     lambda model, x: get_cardinality(model, x) is 0,
-    #     (SetPlaceholder,),
+    #     (set,),
     #     bool,
     # ),
     # "nonempty": Operator(
-    #     lambda model, x: len(x.get_set(model)) > 0, (SetPlaceholder,), bool
+    #     lambda model, x: len(x.get_set(model)) > 0, (set,), bool
     # ),
     # "proportion": Operator(
     #     lambda model, X, Y, q: get_cardinality(model, X)
@@ -267,7 +261,7 @@ OPERATORS = {
     #     > q
     #     if get_cardinality(model, Y) > 0
     #     else 0,
-    #     (SetPlaceholder, SetPlaceholder, float),
+    #     (set, set, float),
     #     bool,
     # )
     # ,
